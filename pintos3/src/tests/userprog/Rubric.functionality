@@ -1,0 +1,45 @@
+Functionality of system calls:
+- Test basic.
+50	args-none
+
+- Test "create" system call.
+1	create-empty
+1	create-long
+1	create-normal
+1	create-exists
+
+- Test "open" system call.
+1	open-missing
+1	open-normal
+1	open-twice
+
+- Test "read" system call.
+1	read-normal
+1	read-zero
+
+- Test "write" system call.
+1	write-normal
+1	write-zero
+
+- Test "close" system call.
+1	close-normal
+
+- Test "exec" system call.
+3	exec-once
+3	exec-multiple
+
+- Test "wait" system call.
+3	wait-simple
+3	wait-twice
+
+- Test "exit" system call.
+3	exit
+
+- Test "halt" system call.
+3	halt
+
+- Test argument passing on Pintos command line.
+5	args-single
+5	args-multiple
+5	args-many
+5	args-dbl-space
