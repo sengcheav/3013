@@ -68,7 +68,10 @@ process_execute (const char *file_name)
      3. If successful, put the wait_status of the child process into the children list.
      4. Otherwise, tid = TID_ERROR.
      ======================== */
-
+     start_process (&exec) ; 
+     if ( &exec->success){
+     	
+     }else { tid = TID_ERROR ; }
   return tid;
 }
 
