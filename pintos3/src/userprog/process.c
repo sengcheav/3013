@@ -70,8 +70,10 @@ process_execute (const char *file_name)
      ======================== */
      start_process (&exec) ; 
      if ( &exec.success){
-     	&exec.wait_status->elem.push_back(&exec->wait_status);
-     }else { tid = TID_ERROR ; }
+     	struct thread *t = thread_current() ;
+     	list_push_back(&t->children , &exec.wait_status->elem);
+     	
+     }else { return TID_ERROR ; }
   return tid;
 }
 
