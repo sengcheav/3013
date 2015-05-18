@@ -100,7 +100,12 @@ static void start_process (void *exec_)
      4. Stop the parent process from waiting for the child process to be loaded.
      ======================== */
   if (success)
-  {   }
+  {   
+  	// malloc 
+  	lock_init(&exec_->lock);//#2 
+  	sema_init(&exec_->dead , 0 ) // 0 live 1 dead
+  	&exec.sucess = true ;  // #3
+  }
 
   if (!success)
     thread_exit ();
