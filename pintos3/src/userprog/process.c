@@ -70,7 +70,7 @@ process_execute (const char *file_name)
      ======================== */
      start_process (&exec) ; 
      if ( &exec.success){
-     	
+     	&exec.wait_status->elem.push_back(&exec->wait_status);
      }else { tid = TID_ERROR ; }
   return tid;
 }
