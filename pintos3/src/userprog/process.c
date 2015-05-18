@@ -102,8 +102,8 @@ static void start_process (void *exec_)
   if (success)
   {   
   	// malloc 
-  	lock_init(&exec.wait_status->lock);//#2 
-  	sema_init(&exec.wait_status-> dead , 0 ) // 0 live 1 dead
+  	lock_init(&exec->wait_status->lock);//#2 
+  	sema_init(&exec->wait_status-> dead , 0 ) // 0 live 1 dead
   	&exec->success = true ;  // #3
   }
 
