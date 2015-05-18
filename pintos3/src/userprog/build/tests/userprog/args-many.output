@@ -1,0 +1,30 @@
+Copying tests/userprog/args-many to scratch partition...
+qemu -hda /tmp/pg62agvDxg.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading.........
+Kernel command line: -q -f extract run 'args-many a b c d e f g h i j k l m n o p q r s t u v'
+Pintos booting with 4,096 kB RAM...
+383 pages available in kernel pool.
+383 pages available in user pool.
+Calibrating timer...  130,867,200 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 147 sectors (73 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 97 sectors (48 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'args-many' into the file system...
+Erasing ustar archive...
+Executing 'args-many a b c d e f g h i j k l m n o p q r s t u v':
+Execution of 'args-many a b c d e f g h i j k l m n o p q r s t u v' complete.
+Timer: 67 ticks
+Thread: 0 idle ticks, 63 kernel ticks, 4 user ticks
+hda2 (filesys): 26 reads, 198 writes
+hda3 (scratch): 96 reads, 2 writes
+Console: 964 characters output
+Keyboard: 0 keys pressed
+Exception: 46501 page faults
+Powering off...

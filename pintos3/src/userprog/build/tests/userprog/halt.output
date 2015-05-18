@@ -1,0 +1,30 @@
+Copying tests/userprog/halt to scratch partition...
+qemu -hda /tmp/wzvGPnymvh.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading.........
+Kernel command line: -q -f extract run halt
+Pintos booting with 4,096 kB RAM...
+383 pages available in kernel pool.
+383 pages available in user pool.
+Calibrating timer...  104,755,200 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 147 sectors (73 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 97 sectors (48 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'halt' into the file system...
+Erasing ustar archive...
+Executing 'halt':
+Execution of 'halt' complete.
+Timer: 59 ticks
+Thread: 0 idle ticks, 59 kernel ticks, 0 user ticks
+hda2 (filesys): 26 reads, 198 writes
+hda3 (scratch): 96 reads, 2 writes
+Console: 810 characters output
+Keyboard: 0 keys pressed
+Exception: 46896 page faults
+Powering off...
