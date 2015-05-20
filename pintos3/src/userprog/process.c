@@ -55,8 +55,8 @@ process_execute (const char *file_name)
      Note that the file_name may contain command-line arguments
      that should not be included in the thread_name.
      ======================== */ 
-   
-   for (int i =0 , filename[i] != ' ' && i < 16 , i++ ){
+   int i =0 ;
+   for ( i =0 , filename[i] != ' ' && i < 16 , i++ ){
 	thread_name[i] = filename[i] ;	
    }	
 
