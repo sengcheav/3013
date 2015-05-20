@@ -110,6 +110,7 @@ static void start_process (void *exec_)
   	exec->wait_status = malloc (sizeof(&t->wait_status )); 
   	lock_init(&exec->wait_status->lock);//#2 
   	sema_init(&exec->wait_status-> dead , 0 ); // 0 live 1 dead
+	exec->wait_status->ref_cnt = 2 ; // child and parent alive
   	exec->success = true ;  // #3
   	sema_up(&exec->load_done); // #4 
   }
@@ -158,7 +159,8 @@ process_wait (tid_t child_tid)
           struct wait_status *child_wait_status = list_entry (e, struct wait_status, elem); 
   			 if (&child_wait_status->tid == child_tid){ //#2
   			 	sema_down ( &child_wait_status->dead );//#3
-  			 //	(&child.wait_status)->exit_code = 1 ;  
+  			 //	(&child.wait_status)->exit_code = 1 ;
+				list_remove(e) ;   
   			 	release_child (&child_wait_status);//#5
   			 	return &child_wait_status->exit_code;//#6
   			 }  	
