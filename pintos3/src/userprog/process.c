@@ -132,10 +132,10 @@ static void start_process (void *exec_)
 static void release_child (struct wait_status *cs)
 {
    lock_acquire(&cs->lock);
-   &cd->ref_cnt-- ;
+   cs->ref_cnt-- ;
    lock_release(&cs->lock);
    
-   if (&cs->ref_cnt-- == 0)
+   if (cs->ref_cnt-- == 0)
    free(cs);
 	
 	
