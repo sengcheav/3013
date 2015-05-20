@@ -54,11 +54,8 @@ process_execute (const char *file_name)
      Code to be added here to copy file_name to thread_name.
      Note that the file_name may contain command-line arguments
      that should not be included in the thread_name.
-     ======================== */ 
-   
-   for (int i =0 , filename[i] != ' ' && i < 16 , i++ ){
-	thread_name[i] = filename[i] ;	
-   }	
+     ======================== */
+	
 
 
   /* start_process is the function to be called at the beginning of a new thread,
@@ -150,7 +147,7 @@ process_wait (tid_t child_tid)
       5. Call release_child().
       6. Return the exit code.
       ======================== */
-  struct thread *t = thread_current(); 
+  struct thread *t = current_thread(); 
   struct list_elem *e;
    for (e = list_begin (&t->children); e != list_end (&t->children);
            e = list_next (e)) // #1
