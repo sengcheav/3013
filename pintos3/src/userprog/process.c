@@ -204,11 +204,11 @@ process_exit (void)
   sema_up(&cur->wait_status->dead) ; 
   release_child ( &cur->wait_status);
    struct list_elem *e;
-   for (e = list_begin (&t->children); e != list_end (&t->children);
+   for (e = list_begin (&cur->children); e != list_end (&cur->children);
            e = list_next (e)) // #1
         {
            struct wait_status *child_wait_status = list_entry (e, struct wait_status, elem);
-           release_child (&child_wait_status);	
+           release_child (child_wait_status);	
         }
   
   /* Destroy the current process's page directory and switch back
