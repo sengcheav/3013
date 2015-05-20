@@ -131,6 +131,14 @@ static void start_process (void *exec_)
 /* Releases one reference to CS and, if it is now unreferenced, frees it. */
 static void release_child (struct wait_status *cs)
 {
+   lock_acquire(&cs->lock);
+   &cd->ref_cnt-- ;
+   lock_release(&cs->lock);
+   
+   if (&cs->ref_cnt-- == 0)
+   free(cs);
+	
+	
 }
 
 /* Waits for thread TID to die and returns its exit status.  If
