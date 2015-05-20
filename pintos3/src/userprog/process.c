@@ -208,7 +208,8 @@ process_exit (void)
            e = list_next (e)) // #1
         {
            struct wait_status *child_wait_status = list_entry (e, struct wait_status, elem);
-           release_child (child_wait_status);	
+           release_child (child_wait_status);
+           list_remove(e);
         }
   
   /* Destroy the current process's page directory and switch back
