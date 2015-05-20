@@ -56,8 +56,8 @@ process_execute (const char *file_name)
      that should not be included in the thread_name.
      ======================== */ 
    int i =0 ;
-   for ( i =0 , filename[i] != ' ' && i < 16 , i++ ){
-	thread_name[i] = filename[i] ;	
+   for ( i =0 ; file_name[i] != ' ' && i < 16 ; i++ ){
+	thread_name[i] = file_name[i] ;	
    }	
 
 
