@@ -201,7 +201,16 @@ process_exit (void)
       3. Go through the child list.
       4. Release a reference to the wait_status of each child process.
       ======================== */
-
+  sema_up(&cur->wait_status->dead) ; 
+  release_child ( &cur->wait_status);
+   struct list_elem *e;
+   for (e = list_begin (&t->children); e != list_end (&t->children);
+           e = list_next (e)) // #1
+        {
+           struct wait_status *child_wait_status = list_entry (e, struct wait_status, elem);
+           release_child (&child_wait_status);	
+        }
+  
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
   pd = cur->pagedir;
