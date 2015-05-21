@@ -22,7 +22,7 @@
 static thread_func start_process NO_RETURN;
 
 static bool load (const char *cmd_line, void (**eip) (void), void **esp);
-
+//
 /* Data structure shared between process_execute() in the
    invoking thread and start_process() in the newly invoked
    thread. */
@@ -72,14 +72,16 @@ process_execute (const char *file_name)
      2. check whether the execution status is successful.
      3. If successful, put the wait_status of the child process into the children list.
      4. Otherwise, tid = TID_ERROR.
-     ======================== */
-     sema_down(&exec.load_done); //1
-     if ( exec.success){ //2
-     	struct thread *t = thread_current() ;
-     	list_push_back(&t->children , &exec.wait_status->elem);//3
+      ======================== */
+     if( tid != TID_ERROR) {
+        sema_down(&exec.load_done); //1
+        if ( exec.success){ //2
+         	struct thread *t = thread_current() ;
+        	list_push_back(&t->children , &exec.wait_status->elem);//3
      	
-     }else { return TID_ERROR ; } //4 
-  return tid;
+        }else { return TID_ERROR ; } //4 
+     }
+     return tid;
 }
 
 /* A thread function that loads a user process and starts it running. */
@@ -107,14 +109,16 @@ static void start_process (void *exec_)
   if (success)
   {   
 	struct thread *t = thread_current();
-  	exec->wait_status = malloc (sizeof(&t->wait_status )); 
-  	lock_init(&exec->wait_status->lock);//#2 
+  	exec->wait_status  = malloc (sizeof(&t->wait_status )); 
+ //	exec->wait_status = &t->wait_status ;   
+	lock_init(&exec->wait_status->lock);//#2 
   	sema_init(&exec->wait_status-> dead , 0 ); // 0 live 1 dead
 	exec->wait_status->ref_cnt = 2 ; // child and parent alive
-  	exec->success = true ;  // #3
-  	sema_up(&exec->load_done); // #4 
-  }
-
+	exec->wait_status->tid = t->tid ;
+//  	exec->success = true ;  // #3
+	success =  true ;
+  	//sema_up(&exec->load_done); // #4 
+  }exec->success = true ; semaup(&exec->load_done) ;
   if (!success)
     thread_exit ();
 
