@@ -22,7 +22,7 @@
 static thread_func start_process NO_RETURN;
 
 static bool load (const char *cmd_line, void (**eip) (void), void **esp);
-
+//
 /* Data structure shared between process_execute() in the
    invoking thread and start_process() in the newly invoked
    thread. */
@@ -54,13 +54,12 @@ process_execute (const char *file_name)
      Code to be added here to copy file_name to thread_name.
      Note that the file_name may contain command-line arguments
      that should not be included in the thread_name.
-     ======================== */
-	int i = 0;
+     ======================== */ 
+   int i =0 ;
+   for ( i =0 ; file_name[i] != ' ' && i < 16 ; i++ ){
+	thread_name[i] = file_name[i] ;	
+   }	
 
-	for(i = 0; file_name[i] != ' ' && i !=16 ;i++){
-		thread_name[i]  = file_name[i];
-	}
-	
 
   /* start_process is the function to be called at the beginning of a new thread,
        &exec is a pointer to the auxiliary information */
@@ -73,16 +72,16 @@ process_execute (const char *file_name)
      2. check whether the execution status is successful.
      3. If successful, put the wait_status of the child process into the children list.
      4. Otherwise, tid = TID_ERROR.
-     ======================== */
-	if(tid!=TID_ERROR){
-		sema_down(&exec.load_done);
-		if(exec.success){
-			list_push_back(&thread_current()->children, &exec.wait_status->elem);		
-		}else {			
-			tid = TID_ERROR;
-		}
-	}
-  return tid;
+      ======================== */
+     if( tid != TID_ERROR) {
+        sema_down(&exec.load_done); //1
+        if ( exec.success){ //2
+         	struct thread *t = thread_current() ;
+        	list_push_back(&t->children , &exec.wait_status->elem);//3
+     	
+        }else { return TID_ERROR ; } //4 
+     }
+     return tid;
 }
 
 /* A thread function that loads a user process and starts it running. */
@@ -108,19 +107,18 @@ static void start_process (void *exec_)
      4. Stop the parent process from waiting for the child process to be loaded.
      ======================== */
   if (success)
-  {//allocating the kernel memory  
-  exec->wait_status = thread_current()->wait_status 
-	 	= malloc(sizeof *exec->wait_status); 
-  	success = exec->wait_status != NULL;
-  //initialize wait_status
-	lock_init(&exec->wait_status->lock);
-	exec->wait_status->ref_cnt = 2;
-	exec->wait_status->tid = thread_current()->tid;
-	sema_init(&exec->wait_status->dead,0);  
-  }
-  exec->success = success;
-  sema_up (&exec->load_done);
- 
+  {   
+	struct thread *t = thread_current();
+  	exec->wait_status  = malloc (sizeof(&t->wait_status )); 
+ //	exec->wait_status = &t->wait_status ;   
+	lock_init(&exec->wait_status->lock);//#2 
+  	sema_init(&exec->wait_status-> dead , 0 ); // 0 live 1 dead
+	exec->wait_status->ref_cnt = 2 ; // child and parent alive
+	exec->wait_status->tid = t->tid ;
+//  	exec->success = true ;  // #3
+	success =  true ;
+  	//sema_up(&exec->load_done); // #4 
+  }exec->success = true ; semaup(&exec->load_done) ;
   if (!success)
     thread_exit ();
 
@@ -137,15 +135,13 @@ static void start_process (void *exec_)
 /* Releases one reference to CS and, if it is now unreferenced, frees it. */
 static void release_child (struct wait_status *cs)
 {
-	int cnt;
+   lock_acquire(&cs->lock);
+   cs->ref_cnt-- ;
+   lock_release(&cs->lock);
+   
+   if (cs->ref_cnt-- == 0)
+   free(cs);
 	
-	lock_acquire(&cs->lock);
-	cnt = --cs->ref_cnt;
-	lock_release(&cs->lock);
-	
-	if(cnt == 0){
-		free(cs);	
-	}	
 	
 }
 
@@ -167,20 +163,22 @@ process_wait (tid_t child_tid)
       5. Call release_child().
       6. Return the exit code.
       ======================== */
-  struct list_elem *element;
-  struct thread *current = thread_current();
-  for(element = list_begin(&current->children); element != list_end(&current->children);element = list_next(element))
-  {
-  	struct wait_status *cs = list_entry(element, struct wait_status, elem);
-  	if(cs->tid == child_tid){
-		int exit_this;
-		list_remove(element);
-		sema_down(&cs->dead);
-		exit_this = cs->exit_code;
-		release_child(cs);
-		return exit_this;  	
-  	}
-  }
+  struct thread *t = thread_current(); 
+  struct list_elem *e;
+   for (e = list_begin (&t->children); e != list_end (&t->children);
+           e = list_next (e)) // #1
+        {
+          struct wait_status *child_wait_status = list_entry (e, struct wait_status, elem); 
+  			 if (&child_wait_status->tid == child_tid){ //#2
+  			 	sema_down ( &child_wait_status->dead );//#3
+  			 //	(&child.wait_status)->exit_code = 1 ;
+				list_remove(e) ;   
+  			 	release_child (&child_wait_status);//#5
+  			 	return &child_wait_status->exit_code;//#6
+  			 }  	
+        }	
+
+
   return -1;
 }
 
@@ -207,27 +205,17 @@ process_exit (void)
       3. Go through the child list.
       4. Release a reference to the wait_status of each child process.
       ======================== */
-	 if (cur->wait_status != NULL) 
-    {
-      struct wait_status *cs = cur->wait_status;
-     // cs->exit_code = cur->exit_code;
-      sema_up (&cs->dead);
-      release_child (cs);
-    }
-
-	struct list_elem *e, *next;
-	
-	for (e = list_begin (&cur->children); e != list_end (&cur->children);
-       e = next) 
-    {
-      struct wait_status *cs = list_entry (e, struct wait_status, elem);
-      next = list_remove (e);
-      release_child (cs);
-    }
-
-	file_close(cur->bin_file); 	
-
-
+  sema_up(&cur->wait_status->dead) ; 
+  release_child ( &cur->wait_status);
+   struct list_elem *e;
+   for (e = list_begin (&cur->children); e != list_end (&cur->children);
+           e = list_next (e)) // #1
+        {
+           struct wait_status *child_wait_status = list_entry (e, struct wait_status, elem);
+           release_child (child_wait_status);
+           list_remove(e);
+        }
+  
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
   pd = cur->pagedir;
@@ -511,15 +499,11 @@ validate_segment (const struct Elf32_Phdr *phdr, struct file *file)
 /* Loads a segment starting at offset OFS in FILE at address
    UPAGE.  In total, READ_BYTES + ZERO_BYTES bytes of virtual
    memory are initialized, as follows:
-
         - READ_BYTES bytes at UPAGE must be read from FILE
           starting at offset OFS.
-
         - ZERO_BYTES bytes at UPAGE + READ_BYTES must be zeroed.
-
    The pages initialized by this function must be writable by the
    user process if WRITABLE is true, read-only otherwise.
-
    Return true if successful, false if a memory allocation error
    or disk read error occurs. */
 static bool
@@ -571,7 +555,6 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
    page-relative stack pointer is *OFS, and then adjusts *OFS
    appropriately.  The bytes pushed are rounded to a 32-bit
    boundary.
-
    If successful, returns a pointer to the newly pushed object.
    On failure, returns a null pointer. */
 static void * push (uint8_t *kpage, size_t *ofs, const void *buf, size_t size)
