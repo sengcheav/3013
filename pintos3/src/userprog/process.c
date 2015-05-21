@@ -112,14 +112,13 @@ static void start_process (void *exec_)
         exec->wait_status  = malloc (sizeof(&t->wait_status ));
         //	exec->wait_status = &t->wait_status ;
         lock_init(&exec->wait_status->lock);//#2
-        sema_init(&exec->wait_status-> dead , 0 ); // 0 live 1 dead
         exec->wait_status->ref_cnt = 2 ; // child and parent alive
         exec->wait_status->tid = t->tid ;
-        //  	exec->success = true ;  // #3
-        success =  true ;
-        //sema_up(&exec->load_done); // #4
-    }exec->success = true ; 
-    sema_up(&exec->load_done) ;
+        exec->wait_status->exit_code =  0 ;
+        sema_init(&exec->wait_status-> dead , 0 ); // 0 live 1 dead
+        exec->success = true ;  // #3
+        sema_up(&exec->load_done); // #4
+    }
     if (!success)
         thread_exit ();
 
@@ -136,13 +135,13 @@ static void start_process (void *exec_)
 /* Releases one reference to CS and, if it is now unreferenced, frees it. */
 static void release_child (struct wait_status *cs)
 {
-	lock_acquire(&cs->lock);
+    lock_acquire(&cs->lock);
     cs->ref_cnt-- ;
     lock_release(&cs->lock);
     
-    if (cs->ref_cnt-- == 0)
+    if (cs->ref_cnt == 0){
         free(cs);
-	
+    }	
 }
 
 /* Waits for thread TID to die and returns its exit status.  If
@@ -163,7 +162,7 @@ process_wait (tid_t child_tid)
       5. Call release_child().
       6. Return the exit code.
       ======================== */
-   struct thread *t = thread_current();
+    struct thread *t = thread_current();
     struct list_elem *e;
     for (e = list_begin (&t->children); e != list_end (&t->children);
          e = list_next (e)) // #1
@@ -205,15 +204,15 @@ process_exit (void)
       3. Go through the child list.
       4. Release a reference to the wait_status of each child process.
       ======================== */
-	 sema_up(&cur->wait_status->dead) ;
+    sema_up(&cur->wait_status->dead) ;
     release_child ( &cur->wait_status);
     struct list_elem *e;
     for (e = list_begin (&cur->children); e != list_end (&cur->children);
          e = list_next (e)) // #1
     {
         struct wait_status *child_wait_status = list_entry (e, struct wait_status, elem);
-        release_child (child_wait_status);
-        list_remove(e);
+        release_child (&child_wait_status);
+        //list_remove(e);
     }	
 
 
