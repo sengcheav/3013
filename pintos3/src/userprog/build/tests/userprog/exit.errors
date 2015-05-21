@@ -1,0 +1,4 @@
+Use of literal control characters in variable names is deprecated at /vol/courses/nwen301/pintos/bin/pintos line 909.
+qemu: /usr/pkg/lib/libcurl.so.4: no version information available (required by qemu)
+Use of uninitialized value in numeric le (<=) at /vol/courses/nwen301/pintos/bin/pintos line 828.
+qemu: terminating on signal 2 from pid 8150

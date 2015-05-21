@@ -1,0 +1,31 @@
+Copying tests/userprog/create-long to scratch partition...
+qemu -hda /tmp/KUcJ_hm5zN.dsk -m 4 -net none -nographic -monitor null
+PiLo hda1
+Loading.........
+Kernel command line: -q -f extract run create-long
+Pintos booting with 4,096 kB RAM...
+383 pages available in kernel pool.
+383 pages available in user pool.
+Calibrating timer...  157,081,600 loops/s.
+hda: 5,040 sectors (2 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 147 sectors (73 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 97 sectors (48 kB), Pintos scratch (22)
+filesys: using hda2
+scratch: using hda3
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'create-long' into the file system...
+Erasing ustar archive...
+Executing 'create-long':
+(test) begin
+system call!
+Kernel PANIC at ../../lib/kernel/list.c:171 in list_insert(): assertion `is_interior (before) || is_tail (before)' failed.
+Call stack: 0xc00284b0 0xc00285ce 0xc002917f 0xc00234cb 0xc002c5d6 0xc002a418 0xc0020f44 0xc002b973 0xc002b8c8 0xc0021a1d 0xc0021b4f 0x804a128 0x80480dd 0x804812a 0x804874e.
+The `backtrace' program can make call stacks useful.
+Read "Backtraces" in the "Debugging Tools" chapter
+of the Pintos documentation for more information.
+Kernel PANIC recursion at ../../threads/synch.c:197 in lock_acquire().
+Execution of 'create-long' complete.
+Simulation terminated due to kernel panic.
