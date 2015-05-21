@@ -118,7 +118,8 @@ static void start_process (void *exec_)
         //  	exec->success = true ;  // #3
         success =  true ;
         //sema_up(&exec->load_done); // #4
-    }exec->success = true ; semaup(&exec->load_done) ;
+    }exec->success = true ; 
+    sema_up(&exec->load_done) ;
     if (!success)
         thread_exit ();
 
