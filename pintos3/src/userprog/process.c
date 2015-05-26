@@ -76,11 +76,13 @@ process_execute (const char *file_name)
     if( tid != TID_ERROR) {
         sema_down(&exec.load_done); //1
         if ( exec.success){ //2
+            printf("Process execute  ----------------\n");
             struct thread *t = thread_current() ;
             list_push_back(&t->children , &exec.wait_status->elem);//3
             
         }else { return TID_ERROR ; } //4
     }
+    printf ( "return tid is  %d ------------- \n" , tid );
     return tid;
 }
 
@@ -110,14 +112,16 @@ static void start_process (void *exec_)
     {
         struct thread *t = thread_current();
         exec->wait_status  = malloc (sizeof(&t->wait_status ));
-        	exec->wait_status = &t->wait_status ;
+      //  exec->wait_status = &t->wait_status ;
         lock_init(&exec->wait_status->lock);//#2
         exec->wait_status->ref_cnt = 2 ; // child and parent alive
         exec->wait_status->tid = t->tid ;
-        exec->wait_status->exit_code =  0 ;
+        exec->wait_status->exit_code =  -1 ;
         sema_init(&exec->wait_status-> dead , 0 ); // 0 live 1 dead
         exec->success = true ;  // #3
         sema_up(&exec->load_done); // #4
+       // if(exec->wait_status == NULL){printf ("TRUE ----------");}
+        printf ("start process ---------%d\n" , exec->wait_status);
     }
     if (!success)
         thread_exit ();
@@ -136,9 +140,9 @@ static void start_process (void *exec_)
 static void release_child (struct wait_status *cs)
 {
     lock_acquire(&cs->lock);
-    cs->ref_cnt-- ;
+    cs->ref_cnt = cs->ref_cnt-1 ;
     lock_release(&cs->lock);
-    
+    printf ("Realease child ---------\n");
     if (cs->ref_cnt == 0){
         free(cs);
     }	
@@ -164,16 +168,26 @@ process_wait (tid_t child_tid)
       ======================== */
     struct thread *t = thread_current();
     struct list_elem *e;
+   // printf ("process  wait---------\n");
     for (e = list_begin (&t->children); e != list_end (&t->children);
          e = list_next (e)) // #1
-    {
+    {   printf("in the loop --------\n");
         struct wait_status *child_wait_status = list_entry (e, struct wait_status, elem);
-        if (&child_wait_status->tid == child_tid){ //#2
+        if (child_wait_status->tid == child_tid){ //#2
+           printf("in the loop ---%d = %d----1\n", child_wait_status->tid , child_tid);
             sema_down ( &child_wait_status->dead );//#3
-            	(child_wait_status)->exit_code = 1 ;
-            list_remove(e) ;
+             printf("in the loop --------1.5\n");
+            int exitCode = child_wait_status-> exit_code ;
+               list_remove(e) ;
+			   if(list_next(e)!= list_end(&t->children)){		         
+	           e = list_next(e) ;       
+	           printf("in the loop --------2\n");     
+            }
+      
             release_child (&child_wait_status);//#5
-            return child_wait_status->exit_code;//#6
+            //return child_wait_status->exit_code;//#6
+            printf("in the loop --------3\n");
+            return exitCode ;
         }
     }
     
@@ -204,17 +218,22 @@ process_exit (void)
       3. Go through the child list.
       4. Release a reference to the wait_status of each child process.
       ======================== */
-    sema_up(&cur->wait_status->dead) ;
-    release_child ( &cur->wait_status);
-    struct list_elem *e;
-    for (e = list_begin (&cur->children); e != list_end (&cur->children);
-         e = list_next (e)) // #1
-    {
-        struct wait_status *child_wait_status = list_entry (e, struct wait_status, elem);
-        release_child (&child_wait_status);
-        //list_remove(e);
-    }	
-
+   // printf ("process exit---------\n");
+    sema_up(&cur->wait_status->dead) ; //#1
+    release_child ( &cur->wait_status); //#2
+    struct list_elem *e , *next;
+	 if (!list_empty( &cur->children)){   //#3 	
+   	 for (e = list_begin (&cur->children); e != list_end (&cur->children);
+      	   e = next )// #1
+   	 {
+       	 struct wait_status *child_wait_status = list_entry (e, struct wait_status, elem);
+		 	 if(list_next(e)!= list_end(&cur->children)){			
+		 	 		next = list_next(e) ;           
+		 	 }
+      	  release_child (&child_wait_status);//#4
+       // list_remove(e);
+ 	    }	
+    }
 
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
