@@ -1,5 +1,5 @@
 Copying tests/userprog/args-none to scratch partition...
-qemu -hda /tmp/aajm9oL1Oy.dsk -m 4 -net none -nographic -monitor null
+qemu -hda /tmp/anjDvVe88N.dsk -m 4 -net none -nographic -monitor null
 PiLo hda1
 Loading.........
 Kernel command line: -q -f extract run args-none
@@ -19,18 +19,21 @@ Extracting ustar archive from scratch device into file system...
 Putting 'args-none' into the file system...
 Erasing ustar archive...
 Executing 'args-none':
-start process ----------1072664468
+start process ----------1072672500
 (args-none) begin
 (args-none) end
 system call!
-Kernel PANIC at ../../lib/kernel/list.c:171 in list_insert(): assertion `is_interior (before) || is_tail (before)' failed.
-Call stack: 0xc00284b0 0xc00285ce 0xc002917f 0xc00234cb 0xc002c676 0xc002a41f 0xc0020f44 0xc002ba58 0xc002b968 0xc0021a1d 0xc0021b4f 0x804a217 0x80486f6.
+args-none: exit(-1)
+Kernel PANIC at ../../threads/thread.c:239 in thread_unblock(): assertion `is_thread (t)' failed.
+Call stack: 0xc00284b0 0xc0020ca0 0xc0022884 0xc0022aaa 0xc002a3e1 0xc002a461 0xc0020f44 0xc002ba18 0xc002b928 0xc0021a1d 0xc0021b4f 0x804a217 0x80486f6.
 The `backtrace' program can make call stacks useful.
 Read "Backtraces" in the "Debugging Tools" chapter
 of the Pintos documentation for more information.
-Kernel PANIC recursion at ../../threads/synch.c:199 in lock_acquire().
-Process execute  ----------------
-return tid is  3 ------------- 
-in the loop --------
-in the loop ---3 = 3----1
-Simulation terminated due to kernel panic.
+Timer: 56 ticks
+Thread: 0 idle ticks, 55 kernel ticks, 1 user ticks
+hda2 (filesys): 61 reads, 196 writes
+hda3 (scratch): 95 reads, 2 writes
+Console: 1303 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...

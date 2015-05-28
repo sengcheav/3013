@@ -1,6 +1,6 @@
 FAIL
 Kernel panic in run: PANIC at ../../threads/thread.c:239 in thread_unblock(): assertion `is_thread (t)' failed.
-Call stack: 0xc00284b0 0xc0020ca0 0xc0022884 0xc0022aaa 0xc002a3e1 0xc002a461 0xc0020f44 0xc002ba18 0xc002b928 0xc0021a1d 0xc0021b4f 0x804a217 0x80486f6
+Call stack: 0xc00284b0 0xc0020ca0 0xc0022884 0xc0022aaa 0xc002a3e1 0xc002a461 0xc0020f44 0xc002b6a0 0xc002b77a 0xc0021a1d 0xc0021b4f 0x80480e8 0x804873e
 Translation of call stack:
 In kernel.o:
 0xc00284b0: debug_panic (.../../lib/kernel/debug.c:38)
@@ -10,13 +10,13 @@ In kernel.o:
 0xc002a3e1: release_child (...../userprog/process.c:145)
 0xc002a461: process_exit (...../userprog/process.c:226)
 0xc0020f44: thread_exit (..../../threads/thread.c:292)
-0xc002ba18: sys_halt (...../userprog/syscall.c:207)
-0xc002b928: syscall_handler (...../userprog/syscall.c:122)
+0xc002b6a0: kill (..../userprog/exception.c:99)
+0xc002b77a: page_fault (.../userprog/exception.c:182)
 0xc0021a1d: intr_handler (..../threads/interrupt.c:367)
 0xc0021b4f: intr_entry (threads/intr-stubs.S:38)
-In tests/userprog/args-none:
-0x0804a217: exit (.../../lib/user/syscall.c:74)
-0x080486f6: random_init (...ild/../../lib/random.c:35)
+In tests/userprog/args-single:
+0x080480e8: main (.../tests/userprog/args.c:18)
+0x0804873e: _start (.../../../lib/user/entry.c:9)
 Translations of user virtual addresses above are based on a guess at
 the binary to use.  If this guess is incorrect, then those
 translations will be misleading.
