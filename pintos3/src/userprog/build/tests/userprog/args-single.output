@@ -1,5 +1,5 @@
 Copying tests/userprog/args-single to scratch partition...
-qemu -hda /tmp/A4YdHYTSHZ.dsk -m 4 -net none -nographic -monitor null
+qemu -hda /tmp/YSukbwU7sl.dsk -m 4 -net none -nographic -monitor null
 PiLo hda1
 Loading.........
 Kernel command line: -q -f extract run 'args-single onearg'
@@ -19,27 +19,22 @@ Extracting ustar archive from scratch device into file system...
 Putting 'args-single' into the file system...
 Erasing ustar archive...
 Executing 'args-single onearg':
-start process ----------1072672500
 (args) begin
 (args) argc = 0
 Page fault at 0: not present error reading page in user context.
-args-singleÀˆï: dying due to interrupt 0x0e (#PF Page-Fault Exception).
+args-single one: dying due to interrupt 0x0e (#PF Page-Fault Exception).
 Interrupt 0x0e (#PF Page-Fault Exception) at eip=0x80480e8
  cr2=00000000 error=00000004
  eax=00000010 ebx=00000000 ecx=0804bc20 edx=00000010
  esi=00000000 edi=00000000 esp=bfffffb0 ebp=bfffffd8
  cs=001b ds=0023 es=0023 ss=0023
-args-singleÀˆï: exit(-1)
-Kernel PANIC at ../../threads/thread.c:239 in thread_unblock(): assertion `is_thread (t)' failed.
-Call stack: 0xc00284b0 0xc0020ca0 0xc0022884 0xc0022aaa 0xc002a3e1 0xc002a461 0xc0020f44 0xc002b6a0 0xc002b77a 0xc0021a1d 0xc0021b4f 0x80480e8 0x804873e.
-The `backtrace' program can make call stacks useful.
-Read "Backtraces" in the "Debugging Tools" chapter
-of the Pintos documentation for more information.
+args-single one: exit(0)
+Execution of 'args-single onearg' complete.
 Timer: 56 ticks
-Thread: 1 idle ticks, 54 kernel ticks, 1 user ticks
+Thread: 2 idle ticks, 54 kernel ticks, 0 user ticks
 hda2 (filesys): 61 reads, 198 writes
 hda3 (scratch): 96 reads, 2 writes
-Console: 1676 characters output
+Console: 1280 characters output
 Keyboard: 0 keys pressed
 Exception: 1 page faults
 Powering off...

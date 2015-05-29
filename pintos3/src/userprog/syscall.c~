@@ -237,7 +237,7 @@ static int sys_wait (tid_t child)
 /* Create system call. */
 static int sys_create (const char *ufile, unsigned initial_size)
 {
-   // printf ("system call!\n");
+    printf ("system call!\n");
     thread_exit ();
     return -1;
 }
